@@ -31,6 +31,9 @@ jobs:
         with:
           node-version: '22'
           cache: 'npm'
+          cache-dependency-path: |
+           job-board-frontend/package.lock.json
+           job-board-backend/package.lock.json
 
       - name: Install Node Dependencies
         run: npm i
