@@ -1,0 +1,93 @@
+name: Tests
+
+on:
+  pull_request:
+    branches:
+      - main
+      - develop
+    paths:
+      - 'job-board-backend/**'
+
+permissions:
+  contents: read
+  issues: write
+  pull-requests: write
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: 8.4
+          extensions: mbstring, xml, ctype, json, bcmath, pdo, sqlite
+          coverage: none
+      
+      - name: Install Dependencies
+        working-directory: ./job-board-backend
+        run: composer install --no-interaction --prefer-dist
+      
+      - name: Copy .env
+        working-directory: ./job-board-backend
+        run: php -r "file_exists('.env') || copy('.env.example', '.env');"
+      
+      - name: Generate application key
+        working-directory: ./job-board-backend
+        run: php artisan key:generate
+      
+      - name: Create SQLite database
+        working-directory: ./job-board-backend
+        run: touch database/database.sqlite
+      
+      - name: Run migrations
+        working-directory: ./job-board-backend
+        env:
+          DB_CONNECTION: sqlite
+          DB_DATABASE: database/database.sqlite
+        run: php artisan migrate --force
+      
+      - name: Run tests
+        working-directory: ./job-board-backend
+        env:
+          DB_CONNECTION: sqlite
+          DB_DATABASE: database/database.sqlite
+        run: php artisan test
+      
+      - name: Comment on PR if tests fail
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: '❌ **Tests failed!**\n\nRun `php artisan test` locally to see details.'
+            })
+      
+      - name: Send Discord notification on success
+        if: success()
+        uses: sarisia/actions-status-discord@v1
+        with:
+          webhook: ${{ secrets.DISCORD_WEBHOOK }}
+          status: ${{ job.status }}
+          title: "✅ Tests Passed"
+          description: "All tests completed successfully!"
+          color: 0x00ff00
+          username: GitHub Actions
+      
+      - name: Send Discord notification on failure
+        if: failure()
+        uses: sarisia/actions-status-discord@v1
+        with:
+          webhook: ${{ secrets.DISCORD_WEBHOOK }}
+          status: ${{ job.status }}
+          title: "❌ Tests Failed"
+          description: "Some tests failed. Check the workflow logs for details."
+          color: 0xff0000
+          username: GitHub Actions
