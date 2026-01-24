@@ -14,6 +14,7 @@ class CreateNewUser implements CreatesNewUsers
 
     /**
      * Validate and create a newly registered user.
+     * This validates that role is required and must be either job_seeker or employer.
      *
      * @param  array<string, string>  $input
      */
@@ -29,12 +30,14 @@ class CreateNewUser implements CreatesNewUsers
                 Rule::unique(User::class),
             ],
             'password' => $this->passwordRules(),
+            'role' => ['required', 'in:job_seeker,employer'],
         ])->validate();
 
         return User::create([
             'name' => $input['name'],
             'email' => $input['email'],
             'password' => Hash::make($input['password']),
+            'role' => $input['role'],
         ]);
     }
 }
