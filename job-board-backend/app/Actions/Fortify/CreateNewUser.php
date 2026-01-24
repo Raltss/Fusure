@@ -3,41 +3,55 @@
 namespace App\Actions\Fortify;
 
 use App\Models\User;
+use App\Models\Company;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Validation\Rule;
 use Laravel\Fortify\Contracts\CreatesNewUsers;
+use Illuminate\Validation\Rule;
 
 class CreateNewUser implements CreatesNewUsers
 {
     use PasswordValidationRules;
 
-    /**
-     * Validate and create a newly registered user.
-     * This validates that role is required and must be either job_seeker or employer.
-     *
-     * @param  array<string, string>  $input
-     */
     public function create(array $input): User
     {
-        Validator::make($input, [
+        // Base validation rules
+        $rules = [
             'name' => ['required', 'string', 'max:255'],
-            'email' => [
-                'required',
-                'string',
-                'email',
-                'max:255',
-                Rule::unique(User::class),
-            ],
-            'password' => $this->passwordRules(),
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
+            'password' => ['required', 'string', 'min:8', 'confirmed'],
             'role' => ['required', 'in:job_seeker,employer'],
-        ])->validate();
+        ];
 
-        return User::create([
+        // Add company validation if role is employer
+        if ($input['role'] === 'employer') {
+            $rules['company_name'] = ['required', 'string', 'max:255'];
+            $rules['company_description'] = ['nullable', 'string'];
+            $rules['company_website'] = ['nullable', 'url'];
+            $rules['company_location'] = ['required', 'string', 'max:255'];
+        }
+
+        Validator::make($input, $rules)->validate();
+
+        // Create user
+        $user = User::create([
             'name' => $input['name'],
             'email' => $input['email'],
             'password' => Hash::make($input['password']),
             'role' => $input['role'],
         ]);
+
+        // Create company if employer
+        if ($input['role'] === 'employer') {
+            Company::create([
+                'user_id' => $user->id,
+                'name' => $input['company_name'],
+                'description' => $input['company_description'] ?? null,
+                'website' => $input['company_website'] ?? null,
+                'location' => $input['company_location'],
+            ]);
+        }
+
+        return $user;
     }
 }

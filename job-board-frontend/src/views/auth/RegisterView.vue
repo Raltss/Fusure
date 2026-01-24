@@ -11,6 +11,10 @@ const form = ref({
   password: '',
   password_confirmation: '',
   role: 'job_seeker',
+  company_name: '',
+  company_description: '',
+  company_website: '',
+  company_location: '',
 })
 
 const errors = ref<Record<string, string[]>>({})
@@ -86,6 +90,77 @@ const register = async () => {
               <option value="job_seeker">Job Seeker</option>
               <option value="employer">Employer</option>
             </select>
+          </div>
+          <!-- Company Fields (Only show if employer) -->
+          <div v-if="form.role === 'employer'" class="border-t pt-4 mb-4">
+            <h3 class="text-lg font-semibold mb-3">Company Information</h3>
+
+            <!-- Company Name -->
+            <div class="form-control mb-4">
+              <label class="label">
+                <span class="label-text">Company Name</span>
+              </label>
+              <input
+                v-model="form.company_name"
+                type="text"
+                placeholder=""
+                class="input input-bordered px-2"
+                :class="{ 'input-error': errors.company_name }"
+              />
+              <label v-if="errors.company_name" class="label">
+                <span class="label-text-alt text-error">{{ errors.company_name[0] }}</span>
+              </label>
+            </div>
+
+            <!-- Company Location -->
+            <div class="form-control mb-4">
+              <label class="label">
+                <span class="label-text">Company Location</span>
+              </label>
+              <input
+                v-model="form.company_location"
+                type="text"
+                placeholder=""
+                class="input input-bordered px-2"
+                :class="{ 'input-error': errors.company_location }"
+              />
+              <label v-if="errors.company_location" class="label">
+                <span class="label-text-alt text-error">{{ errors.company_location[0] }}</span>
+              </label>
+            </div>
+
+            <!-- Company Website -->
+            <div class="form-control mb-4">
+              <label class="label">
+                <span class="label-text">Company Website (Optional)</span>
+              </label>
+              <input
+                v-model="form.company_website"
+                type="url"
+                placeholder=""
+                class="input input-bordered px-2"
+                :class="{ 'input-error': errors.company_website }"
+              />
+              <label v-if="errors.company_website" class="label">
+                <span class="label-text-alt text-error">{{ errors.company_website[0] }}</span>
+              </label>
+            </div>
+
+            <!-- Company Description -->
+            <div class="form-control mb-4">
+              <label class="label">
+                <span class="label-text">Company Description (Optional)</span>
+              </label>
+              <textarea
+                v-model="form.company_description"
+                placeholder=""
+                class="textarea textarea-bordered h-24"
+                :class="{ 'textarea-error': errors.company_description }"
+              ></textarea>
+              <label v-if="errors.company_description" class="label">
+                <span class="label-text-alt text-error">{{ errors.company_description[0] }}</span>
+              </label>
+            </div>
           </div>
 
           <!-- Password -->
