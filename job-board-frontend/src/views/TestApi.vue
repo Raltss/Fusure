@@ -2,9 +2,9 @@
 import { ref } from 'vue'
 import axios from 'axios'
 
-const message = ref<string>('')
-const error = ref<string>('')
-const loading = ref<boolean>(false)
+const message = ref('')
+const error = ref('')
+const loading = ref(false)
 
 const testApi = async () => {
   loading.value = true
@@ -12,10 +12,13 @@ const testApi = async () => {
   error.value = ''
 
   try {
+    console.log('Making API request...')
     const response = await axios.get('/api/test')
+    console.log('Response:', response.data)
     message.value = response.data.message
   } catch (err: any) {
-    error.value = 'API Error: ' + err.message
+    console.error('Error:', err)
+    error.value = 'API Error: ' + (err.message || 'Unknown error')
   } finally {
     loading.value = false
   }
