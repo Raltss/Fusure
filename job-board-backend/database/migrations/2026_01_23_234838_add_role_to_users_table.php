@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::table('users', function (Blueprint $table) {
             $table->enum('role', ['job_seeker', 'employer', 'admin'])->default('job_seeker')->after('email');
-            // Add a new column called 'role' to the users table. 
-            // It can only be 'job_seeker', 'employer', or 'admin'. If not specified, default to 'job_seeker'. 
+            // Add a new column called 'role' to the users table.
+            // It can only be 'job_seeker', 'employer', or 'admin'. If not specified, default to 'job_seeker'.
             // Put it after the email column.
         });
     }
