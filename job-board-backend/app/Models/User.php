@@ -21,10 +21,11 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'role',
     ];
 
     /**
-     * The attributes that should be hidden for serialization. aaaaaaaa
+     * The attributes that should be hidden for serialization
      *
      * @var list<string>
      */
