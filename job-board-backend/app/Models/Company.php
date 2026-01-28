@@ -21,6 +21,7 @@ class Company extends Model
     {
         return $this->belongsTo(User::class);
     }
+
     public function jobPostings(): HasMany
     {
         return $this->hasMany(JobPosting::class);

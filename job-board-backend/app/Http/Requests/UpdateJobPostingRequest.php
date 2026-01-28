@@ -13,8 +13,8 @@ class UpdateJobPostingRequest extends FormRequest
     {
         // Only the company owner (employer) can update their job postings
         $jobPosting = $this->route('job_posting');
-        
-        return $this->user() && 
+
+        return $this->user() &&
                $this->user()->role === 'employer' &&
                $jobPosting->company->user_id === $this->user()->id;
     }
