@@ -16,12 +16,12 @@ class CheckRole
     public function handle(Request $request, Closure $next, string ...$roles): Response
     {
         // Check if user is authenticated
-        if (!$request->user()) {
+        if (! $request->user()) {
             return response()->json(['message' => 'Unauthenticated.'], 401);
         }
 
         // Check if user has one of the required roles
-        if (!in_array($request->user()->role, $roles)) {
+        if (! in_array($request->user()->role, $roles)) {
             return response()->json(['message' => 'Forbidden. You do not have access to this resource.'], 403);
         }
 
