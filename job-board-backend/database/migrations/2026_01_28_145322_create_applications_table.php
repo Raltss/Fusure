@@ -20,7 +20,7 @@ return new class extends Migration
             $table->enum('status', ['pending', 'reviewed', 'shortlisted', 'interviewed', 'rejected', 'accepted'])->default('pending');
             $table->text('notes')->nullable(); // For employer notes
             $table->timestamps();
-            
+
             // Prevent duplicate applications (one user can apply to a job only once)
             $table->unique(['user_id', 'job_posting_id']);
         });

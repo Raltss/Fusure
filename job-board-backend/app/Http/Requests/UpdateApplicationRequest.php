@@ -14,8 +14,8 @@ class UpdateApplicationRequest extends FormRequest
         // Only employers can update application status
         // And only if the job posting belongs to their company
         $application = $this->route('application');
-        
-        return $this->user() && 
+
+        return $this->user() &&
                $this->user()->role === 'employer' &&
                $application->jobPosting->company->user_id === $this->user()->id;
     }
