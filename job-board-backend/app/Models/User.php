@@ -4,11 +4,11 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class User extends Authenticatable
 {
@@ -54,21 +54,24 @@ class User extends Authenticatable
     {
         return $this->hasOne(Company::class);
     }
+
     public function applications(): HasMany
     {
         return $this->hasMany(Application::class);
     }
+
     public function savedJobs(): BelongsToMany
     {
         return $this->belongsToMany(JobPosting::class, 'saved_jobs')
-                    ->withTimestamps();
+            ->withTimestamps();
     }
+
     /**
- * Save a job posting
- */
+     * Save a job posting
+     */
     public function saveJob(JobPosting $jobPosting): void
     {
-        if (!$this->hasSavedJob($jobPosting)) {
+        if (! $this->hasSavedJob($jobPosting)) {
             $this->savedJobs()->attach($jobPosting->id);
         }
     }
@@ -96,9 +99,11 @@ class User extends Authenticatable
     {
         if ($this->hasSavedJob($jobPosting)) {
             $this->unsaveJob($jobPosting);
+
             return false; // Unsaved
         } else {
             $this->saveJob($jobPosting);
+
             return true; // Saved
         }
     }

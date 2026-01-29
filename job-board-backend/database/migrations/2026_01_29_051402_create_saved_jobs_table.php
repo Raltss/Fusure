@@ -13,7 +13,7 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->foreignId('job_posting_id')->constrained()->onDelete('cascade');
             $table->timestamps();
-            
+
             // Prevent duplicate saves
             $table->unique(['user_id', 'job_posting_id']);
         });
